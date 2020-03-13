@@ -39,14 +39,20 @@ Commit your code regularly and use descriptive messages. This helps both you (in
 Demonstrate your understanding of this Sprint's concepts by answering the following free-form questions. Edit this document to include your answers after each question. Make sure to leave a blank line above and below your answer so it is clear and easy to read by your Team Lead.
 
 - [ ] Mention two parts of Express that you learned about this week.
+- Routing - this is a great way to map out incoming requests from clients to the server and allows you to keep different URL paths organized into different routers 
+- Middleware - There are hundreds of different middleware libraries you can use with express, as well as creating your own, that make Express much more powerful such as logging all requests made to the server, encrypting your security headers, etc.
 
 - [ ] Describe Middleware?
+Middleware are just functions that extend software capabilities, almost everything in Express is a chain of middleware functions. Middleware intercepts incoming requests, takes in the data and does something with it, then either sends it to the next middleware or  sends out the server response.
 
 - [ ] Describe a Resource?
+A resource is almost everything you interact with when building a REST API. Each resource is accessible through a unique URL and made via a HTTP request. Resources can have multiple representations, but it is generally the data that you are interacting with.
 
 - [ ] What can the API return to help clients know if a request was successful?
+If a request was successful, a good response from an API would be a http response code such as 200 or 201 to let the client know that the request has succeeded or data has been created. Another good thing to add might be an actual success message or displaying the object the client just created.
 
 - [ ] How can we partition our application into sub-applications?
+Each url path that shares the same base url should be split into their own folders and set up to a router which is then imported into the server.js file. If each route folder has it’s own database, the database should live in the same folder as the router. The server.js file should then be exported and imported into the index.js file, which is where the server port is set up and listens for changes in the application.
 
 ## Minimum Viable Product
 
