@@ -4,6 +4,8 @@ const Actions = require('../data/helpers/actionModel');
 
 const router = express.Router();
 
+
+//  Get all actions
 router.get('/', (req, res) => {
     Actions.get()
         .then(actions => {
@@ -15,6 +17,7 @@ router.get('/', (req, res) => {
         })
 })
 
+//  Get action by ID
 router.get('/:id', (req, res) => {
     const id = req.params.id;
     Actions.get(id)
@@ -31,6 +34,7 @@ router.get('/:id', (req, res) => {
         })
 })
 
+//  Delete action by ID
 router.delete('/:id', (req, res) => {
     const id = req.params.id;
     Actions.remove(id)
@@ -47,6 +51,7 @@ router.delete('/:id', (req, res) => {
         })
 })
 
+// Update action by ID
 router.put('/:id', (req, res) => {
     const id = req.params.id;
     if (req.body.id === id) {

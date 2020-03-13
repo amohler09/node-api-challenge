@@ -5,6 +5,7 @@ const Actions = require('../data/helpers/actionModel');
 
 const router = express.Router();
 
+//  Get all projects
 router.get('/', (req, res) => {
     Projects.get()
         .then(projects => {
@@ -16,6 +17,7 @@ router.get('/', (req, res) => {
         })
 })
 
+//  Get project by ID
 router.get('/:id', (req, res) => {
     const id = req.params.id;
     Projects.get(id)
@@ -32,6 +34,7 @@ router.get('/:id', (req, res) => {
         })
 })
 
+//  Get all actions for specific project
 router.get('/:id/actions', (req, res) => {
     const id = req.params.id;
     Projects.getProjectActions(id)
@@ -48,6 +51,7 @@ router.get('/:id/actions', (req, res) => {
         })
 })
 
+//  Add a new project
 router.post('/', (req, res) => {
     Projects.insert(req.body)
         .then(project => {
@@ -63,6 +67,7 @@ router.post('/', (req, res) => {
         })
 })
 
+//  Add a new action for a specific project
 router.post('/:id/actions', (req, res) => {
     const id = req.params.id;
     if (req.body.project_id === id) {
@@ -77,9 +82,34 @@ router.post('/:id/actions', (req, res) => {
     } else {
         res.status(404).json({ error: "Make sure project id matches route path and try again" });
     }
-    
-
 })
+
+//  Delete a project
+router.delete('/:id', (req, res) => {
+    const id = req.params.id;
+    Projects.remove(id)
+        .then(project => {
+            res.status(200).json({ message: "Project has been successfully deleted" });
+        })
+        .catch(error => {
+            console.log(error);
+            res.status(500).json({ message: "Error deleting project" });
+        })
+});
+
+//  Update a project
+router.put('/:id', (req, res) => {
+    const id = req.params.id;
+    Projects.update(id, req.body)
+        .then(project => {
+            res.status(200).json(project);
+        })
+        .catch(error => {
+            console.log(error);
+            res.status(500).json({ message: "Error updating project" });
+        })
+})
+
 
 
 
