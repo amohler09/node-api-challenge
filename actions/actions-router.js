@@ -18,15 +18,10 @@ router.get('/', (req, res) => {
 })
 
 //  Get action by ID
-router.get('/:id', (req, res) => {
-    const id = req.params.id;
-    Actions.get(id)
+router.get('/:id', validateActionID, (req, res) => {
+    Actions.get(req.params.id)
         .then(actions => {
-            if (actions) {
                 res.status(200).json(actions);
-            } else {
-                res.status(404).json({ message: "Could not find an action with that ID" });
-            }
         })
         .catch(error => {
             console.log(error);
@@ -34,16 +29,23 @@ router.get('/:id', (req, res) => {
         })
 })
 
-//  Delete action by ID
-router.delete('/:id', (req, res) => {
-    const id = req.params.id;
-    Actions.remove(id)
+//  Add a new action
+router.post('/', (req, res) => {
+        Actions.insert(req.body)
         .then(action => {
-            if (!action) {
-                res.status(400).json({ message: "Invalid action ID" });
-            } else {
-                res.status(200).json({ message: "Action has been deleted" });
-            }
+            res.status(201).json(action);
+        })
+        .catch(error => {
+            console.log(error);
+            res.status(500).json({ message: "Error adding action" });
+        })
+})
+
+//  Delete action by ID
+router.delete('/:id', validateActionID, (req, res) => {
+    Actions.remove(req.params.id)
+        .then(action => {
+                res.status(200).json({ message: "Action deleted" });
         })
         .catch(error => {
             console.log(error);
@@ -52,21 +54,32 @@ router.delete('/:id', (req, res) => {
 })
 
 // Update action by ID
-router.put('/:id', (req, res) => {
-    const id = req.params.id;
-    if (req.body.id === id) {
-        Actions.update(id, req.body)
+router.put('/:id', validateActionID, (req, res) => {
+        Actions.update(req.params.id, req.body)
         .then(action => {
             res.status(200).json(action);
         })
         .catch(error => {
             console.log(error);
-            res.status(500).json({ message: "Error updating post" });
+            res.status(404).json({ message: "Error updating post" });
         })
-    } else {
-        res.status(400).json({ message: "Make sure ID to update matches route and try again" });
-    }
     
 })
+
+//  middleware
+function validateActionID(req, res, next) {
+    Actions.get(req.params.id)
+        .then(action => {
+            if (!action) {
+                res.status(400).json({ message: "Invalid action ID" });
+            }
+        })
+        .catch(error => {
+            console.log(error);
+            res.status(500).json({ message: "Error retrieving action" });
+        })
+
+    next();
+}
 
 module.exports = router;

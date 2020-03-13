@@ -18,15 +18,10 @@ router.get('/', (req, res) => {
 })
 
 //  Get project by ID
-router.get('/:id', (req, res) => {
-    const id = req.params.id;
-    Projects.get(id)
+router.get('/:id', validateProjectId, (req, res) => {
+    Projects.get(req.params.id)
         .then(project => {
-            if(project) {
-                res.status(200).json(project);
-            } else {
-                res.status(404).json({ message: "Cannot find a project with that ID" });
-            }
+            res.status(200).json(project);
         })
         .catch(error => {
             console.log(error);
@@ -35,9 +30,8 @@ router.get('/:id', (req, res) => {
 })
 
 //  Get all actions for specific project
-router.get('/:id/actions', (req, res) => {
-    const id = req.params.id;
-    Projects.getProjectActions(id)
+router.get('/:id/actions', validateProjectId, (req, res) => {
+    Projects.getProjectActions(req.params.id)
         .then(actions => {
             if (actions.length > 0) {
                 res.status(200).json(actions);
@@ -67,27 +61,9 @@ router.post('/', (req, res) => {
         })
 })
 
-//  Add a new action for a specific project
-router.post('/:id/actions', (req, res) => {
-    const id = req.params.id;
-    if (req.body.project_id === id) {
-        Actions.insert(req.body)
-        .then(action => {
-            res.status(201).json(action);
-        })
-        .catch(error => {
-            console.log(error);
-            res.status(500).json({ message: "Error adding action" });
-        })
-    } else {
-        res.status(404).json({ error: "Make sure project id matches route path and try again" });
-    }
-})
-
 //  Delete a project
-router.delete('/:id', (req, res) => {
-    const id = req.params.id;
-    Projects.remove(id)
+router.delete('/:id', validateProjectId, (req, res) => {
+    Projects.remove(req.params.id)
         .then(project => {
             res.status(200).json({ message: "Project has been successfully deleted" });
         })
@@ -98,9 +74,8 @@ router.delete('/:id', (req, res) => {
 });
 
 //  Update a project
-router.put('/:id', (req, res) => {
-    const id = req.params.id;
-    Projects.update(id, req.body)
+router.put('/:id', validateProjectId, (req, res) => {
+    Projects.update(req.params.id, req.body)
         .then(project => {
             res.status(200).json(project);
         })
@@ -110,7 +85,20 @@ router.put('/:id', (req, res) => {
         })
 })
 
+function validateProjectId(req, res, next) {
+    Projects.get(req.params.id)
+        .then(project => {
+            if (!project) {
+                res.status(400).json({ message: "Invalid project ID" });
+            }
+        })
+        .catch(error => {
+            console.log(error);
+            res.status(500).json({ message: "Error retrieving project" });
+        })
 
+    next();
+}
 
 
 module.exports = router;
